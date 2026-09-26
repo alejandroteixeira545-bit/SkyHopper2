@@ -23,11 +23,10 @@ jobs:
           echo "Conteúdo:"
           find android-project -maxdepth 3 -type f | head -50
 
-      - name: - name: Instalar Gradle 8.13
-  uses: gradle/actions/setup-gradle@v4
-  with:
-    gradle-version: '8.13'
-        uses: 
+      - name: Instalar Gradle 8.13
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.13'
 
       - name: Gerar AAB
         working-directory: android-project/SkyHopper2Android

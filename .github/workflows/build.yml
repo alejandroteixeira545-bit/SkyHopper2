@@ -1,7 +1,5 @@
 name: Build Sky Hopper 2
 
-name: Build Sky Hopper 2
-
 on:
   workflow_dispatch:
 
@@ -13,7 +11,7 @@ jobs:
       - name: Baixar código
         uses: actions/checkout@v4
 
-      - name: Configurar Java 17
+      - name: Configurar Java
         uses: actions/setup-java@v4
         with:
           distribution: temurin
@@ -21,7 +19,6 @@ jobs:
 
       - name: Preparar Android SDK
         run: |
-          echo "ANDROID_HOME=$ANDROID_HOME"
           yes | sdkmanager --licenses || true
           sdkmanager "platforms;android-36" "build-tools;36.0.0"
 

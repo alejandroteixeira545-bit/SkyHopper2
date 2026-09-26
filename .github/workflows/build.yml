@@ -1,55 +1,38 @@
 name: Build Sky Hopper 2
 
+name: Build Sky Hopper 2
+
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - principal
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Baixar projeto
+      - name: Baixar código
         uses: actions/checkout@v4
 
-      - name: Configurar Java
+      - name: Configurar Java 17
         uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: '17'
 
-      - name: Configurar Android SDK
-        uses: android-actions/setup-android@v3
-
-      - name: Instalar Android SDK 36
+      - name: Preparar Android SDK
         run: |
+          echo "ANDROID_HOME=$ANDROID_HOME"
+          yes | sdkmanager --licenses || true
           sdkmanager "platforms;android-36" "build-tools;36.0.0"
 
-      - name: Extrair projeto Android
-        run: |
-          mkdir -p android-project
-          unzip -o *.zip -d android-project
-          echo "Arquivos encontrados:"
-          find android-project -maxdepth 4 -type f | head -100
-
-      - name: Encontrar projeto Gradle
-        run: |
-          PROJECT_DIR=$(find android-project -name gradlew -type f -print -quit | xargs dirname)
-          echo "PROJECT_DIR=$PROJECT_DIR" >> "$GITHUB_ENV"
-
       - name: Dar permissão ao Gradle
-        run: chmod +x "$PROJECT_DIR/gradlew"
+        run: chmod +x gradlew
 
       - name: Gerar AAB
-        run: |
-          cd "$PROJECT_DIR"
-          ./gradlew bundleRelease
+        run: ./gradlew bundleRelease
 
       - name: Salvar AAB
         uses: actions/upload-artifact@v4
         with:
           name: SkyHopper2-AAB
-          path: |
-            android-project/**/build/outputs/bundle/release/*.aab
+          path: app/build/outputs/bundle/release/*.aab

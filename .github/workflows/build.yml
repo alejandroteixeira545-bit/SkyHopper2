@@ -17,32 +17,19 @@ jobs:
           distribution: temurin
           java-version: '17'
 
-      - name: Extrair projeto Android
+      - name: Entrar no projeto Android
         run: |
-          mkdir android-project
-          unzip -o SkyHopper2_Android_PlayReady\ \(2\).zip -d android-project
+          cd android-project/SkyHopper2Android
 
-      - name: Localizar Gradle
-        run: |
-          GRADLEW=$(find android-project -name gradlew -type f | head -1)
-          if [ -z "$GRADLEW" ]; then
-            echo "ERRO: gradlew não encontrado"
-            find android-project -maxdepth 4 -type f
-            exit 1
-          fi
-          PROJECT_DIR=$(dirname "$GRADLEW")
-          echo "PROJECT_DIR=$PROJECT_DIR" >> "$GITHUB_ENV"
-
-      - name: Dar permissão ao Gradle
-        run: chmod +x "$PROJECT_DIR/gradlew"
+      - name: Instalar Gradle
+        uses: gradle/actions/setup-gradle@v4
 
       - name: Gerar AAB
-        run: |
-          cd "$PROJECT_DIR"
-          ./gradlew bundleRelease
+        working-directory: android-project/SkyHopper2Android
+        run: gradle bundleRelease
 
       - name: Salvar AAB
         uses: actions/upload-artifact@v4
         with:
           name: SkyHopper2-AAB
-          path: android-project/**/build/outputs/bundle/release/*.aab
+          path: android-project/SkyHopper2Android/app/build/outputs/bundle/release/*.aab

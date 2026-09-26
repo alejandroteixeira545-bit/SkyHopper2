@@ -17,9 +17,11 @@ jobs:
           distribution: temurin
           java-version: '17'
 
-      - name: Entrar no projeto Android
+      - name: Extrair projeto Android
         run: |
-          cd android-project/SkyHopper2Android
+          unzip -o "SkyHopper2_Android_PlayReady (2).zip" -d android-project
+          echo "Conteúdo:"
+          find android-project -maxdepth 3 -type f | head -50
 
       - name: Instalar Gradle
         uses: gradle/actions/setup-gradle@v4

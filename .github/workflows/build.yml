@@ -21,6 +21,35 @@ jobs:
         run: |
           unzip -o "SkyHopper2_Android_PlayReady (2).zip" -d android-project
 
+      - name: Corrigir toque na loja
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          arquivos = list(Path("android-project").rglob("sky_hopper_2.html"))
+
+          if not arquivos:
+              raise SystemExit("HTML do jogo não encontrado")
+
+          antigo = "addEventListener('pointerdown',e=>{if(e.target.closest('button'))return;flap()});"
+
+          novo = """addEventListener('pointerdown',e=>{
+            if(!$('shop').classList.contains('hidden'))return;
+            if(e.target.closest('button'))return;
+            flap();
+          });"""
+
+          for arquivo in arquivos:
+              texto = arquivo.read_text(encoding="utf-8")
+
+              if antigo not in texto:
+                  raise SystemExit("Trecho do toque não encontrado")
+
+              texto = texto.replace(antigo, novo)
+              arquivo.write_text(texto, encoding="utf-8")
+              print("Correção aplicada:", arquivo)
+          PY
+
       - name: Instalar Gradle 8.13
         uses: gradle/actions/setup-gradle@v4
         with:

@@ -30,8 +30,28 @@ jobs:
         working-directory: android-project/SkyHopper2Android
         run: gradle assembleRelease
 
+      - name: Assinar APK
+        working-directory: android-project/SkyHopper2Android
+        run: |
+          keytool -genkeypair -v \
+            -keystore skyhopper.keystore \
+            -alias skyhopper \
+            -keyalg RSA \
+            -keysize 2048 \
+            -validity 10000 \
+            -storepass skyhopper123 \
+            -keypass skyhopper123 \
+            -dname "CN=Sky Hopper 2, OU=Games, O=Alejantv, L=Brazil, ST=CE, C=BR"
+
+          ${ANDROID_HOME}/build-tools/$(ls ${ANDROID_HOME}/build-tools | sort -V | tail -1)/apksigner sign \
+            --ks skyhopper.keystore \
+            --ks-pass pass:skyhopper123 \
+            --key-pass pass:skyhopper123 \
+            --out app/build/outputs/apk/release/app-release.apk \
+            app/build/outputs/apk/release/app-release-unsigned.apk
+
       - name: Salvar APK
         uses: actions/upload-artifact@v4
         with:
           name: SkyHopper2-APK
-          path: android-project/SkyHopper2Android/app/build/outputs/apk/release/*.apk
+          path: android-project/SkyHopper2Android/app/build/outputs/apk/release/app-release.apk

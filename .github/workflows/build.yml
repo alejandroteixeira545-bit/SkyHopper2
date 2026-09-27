@@ -1,4 +1,4 @@
-name: Build Sky Hopper 2
+name: Build Sky Hopper 2 APK
 
 on:
   workflow_dispatch:
@@ -20,20 +20,18 @@ jobs:
       - name: Extrair projeto Android
         run: |
           unzip -o "SkyHopper2_Android_PlayReady (2).zip" -d android-project
-          echo "Conteúdo:"
-          find android-project -maxdepth 3 -type f | head -50
 
       - name: Instalar Gradle 8.13
         uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: '8.13'
 
-      - name: Gerar AAB
+      - name: Gerar APK
         working-directory: android-project/SkyHopper2Android
-        run: gradle bundleRelease
+        run: gradle assembleRelease
 
-      - name: Salvar AAB
+      - name: Salvar APK
         uses: actions/upload-artifact@v4
         with:
-          name: SkyHopper2-AAB
-          path: android-project/SkyHopper2Android/app/build/outputs/bundle/release/*.aab
+          name: SkyHopper2-APK
+          path: android-project/SkyHopper2Android/app/build/outputs/apk/release/*.apk

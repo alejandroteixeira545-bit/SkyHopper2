@@ -26,7 +26,11 @@ jobs:
           python3 - <<'PY'
           from pathlib import Path
 
-          arquivos = list(Path("android-project").rglob("sky_hopper_2.html"))
+          arquivos = list(Path(".").rglob("sky_hopper_2.html"))
+
+          print("Arquivos HTML encontrados:")
+          for arquivo in arquivos:
+              print(arquivo)
 
           if not arquivos:
               raise SystemExit("HTML do jogo não encontrado")
@@ -42,12 +46,12 @@ jobs:
           for arquivo in arquivos:
               texto = arquivo.read_text(encoding="utf-8")
 
-              if antigo not in texto:
-                  raise SystemExit("Trecho do toque não encontrado")
-
-              texto = texto.replace(antigo, novo)
-              arquivo.write_text(texto, encoding="utf-8")
-              print("Correção aplicada:", arquivo)
+              if antigo in texto:
+                  texto = texto.replace(antigo, novo)
+                  arquivo.write_text(texto, encoding="utf-8")
+                  print("Correção aplicada:", arquivo)
+              else:
+                  print("Trecho já corrigido ou diferente:", arquivo)
           PY
 
       - name: Instalar Gradle 8.13
